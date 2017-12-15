@@ -1,19 +1,21 @@
+# -*- coding: utf-8 -*-
 import tushare as ts
 import os
-import json
 import logging
 from datetime import date
 
 from src.util.ConfigUtils import ConfigUtils
 from src.util.LogUtils import LogUtils
+from src.util.FileUtils import FileUtils
 
 
 class SinaFinanceNewsCollector:
 
-    def __init__(self):
-        self.config = ConfigUtils.generate_config("path")
-        self.MAX_NEWS_COUNT = 1000
-        LogUtils.generate_logger("logger_path")
+    def __init__(self, max_news):
+        self.config = ConfigUtils.generate_config("../../../../../../"
+                                                  "configuration/collector/text/collector_sina.config")
+        self.MAX_NEWS_COUNT = max_news if max_news is not None else self.config.get('MAX_NEWS_COUNT', 'value')
+        LogUtils.generate_logger("../../../../../../log/collector/text/sina/")
 
     def collect(self):
         result = self.__download_news()
@@ -64,7 +66,7 @@ class SinaFinanceNewsCollector:
                 news_added_count += 1
             i += 1
 
-        self.__write_news_list()
+        self.__write_news_list(current_news)
         logging.info("New added news count: %(count)d " % {"count": news_added_count})
         logging.info("Total news count: %(count)d " % {"count": len(current_news)})
 
@@ -93,24 +95,15 @@ class SinaFinanceNewsCollector:
 
         return news_list
 
-    def __get_data_file_name(self):
-        data_pool = self.config.get('data_pool','data_pool')
-        data_file = self.config.get('tushare_news','data_file')
-        return os.path.join(data_pool, data_file)
-
     def __read_previous_news_list(self):
-        if os.path.isfile(self.__get_data_file_name()):
-            logging.info("Reading news list file")
-            f = open(self.__get_data_file_name(), 'rb')
-            news_list = json.load(f)
-            f.close()
-        else:
-            news_list = []
-
-        return news_list
+        logging.info("Reading news list file")
+        return FileUtils.read_lost_from_local_path_json(self.__get_data_file_path())
 
     def __write_news_list(self, news_list):
         logging.info("Writing news list file")
-        f = open(self.__get_data_file_name(), 'wb')
-        json.dump(news_list, f)
-        f.close()
+        FileUtils.write_list_to_local_path_json(news_list, self.__get_data_file_path())
+
+    def __get_data_file_path(self):
+        data_pool = self.config.get('data_pool','data_pool')
+        data_file = self.config.get('tushare_news','data_file')
+        return os.path.join(data_pool, data_file)
