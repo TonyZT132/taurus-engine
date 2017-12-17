@@ -1,4 +1,5 @@
-import json
+# -*- coding: utf-8 -*-
+import pickle
 import os
 
 
@@ -17,16 +18,15 @@ class FileUtils:
     @staticmethod
     def write_list_to_local_path_json(list, path):
         f = open(path, 'wb')
-        json.dump(list, f)
+        pickle.dump(list, f)
         f.close()
 
     @staticmethod
-    def read_lost_from_local_path_json(path):
+    def read_list_from_local_path_json(path):
         if os.path.isfile(path):
             f = open(path, 'rb')
-            list = json.load(f)
+            loaded_list = pickle.load(f)
             f.close()
         else:
-            list = []
-
-        return list
+            loaded_list = []
+        return loaded_list

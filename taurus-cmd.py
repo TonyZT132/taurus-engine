@@ -7,6 +7,7 @@ from src.collector.text.news.sina.finance.SinaFinanceNewsCollector import SinaFi
 def start_sina_collector(result):
     cat = result.cat
     if cat == "finance":
+        print("Starting sina collector")
         collector = SinaFinanceNewsCollector(50)
         collector.collect()
 

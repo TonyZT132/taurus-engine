@@ -2,20 +2,37 @@
 import tushare as ts
 import os
 import logging
-from datetime import date
 
-from src.util.ConfigUtils import ConfigUtils
-from src.util.LogUtils import LogUtils
+from datetime import date
+from datetime import datetime
+from configparser import ConfigParser
+
 from src.util.FileUtils import FileUtils
 
 
 class SinaFinanceNewsCollector:
 
     def __init__(self, max_news):
-        self.config = ConfigUtils.generate_config("../../../../../../"
-                                                  "configuration/collector/text/collector_sina.config")
+        self.__init_logger()
+        self.config = ConfigParser()
+        self.config.read("configuration/collector/text/collector_sina.config")
         self.MAX_NEWS_COUNT = max_news if max_news is not None else self.config.get('MAX_NEWS_COUNT', 'value')
-        LogUtils.generate_logger("../../../../../../log/collector/text/sina/")
+
+    @staticmethod
+    def __init_logger():
+        log_folder_path = "log/collector/text/sina"
+        log_file_name = datetime.now().strftime('%c') + ".log"
+        log_file_path = os.path.join(log_folder_path, log_file_name)
+
+        if not os.path.isfile(log_file_path):
+            FileUtils.touch(log_folder_path, log_file_name)
+
+        logging.basicConfig(filename=log_file_path, level=logging.INFO)
+        log_formatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
+        root_logger = logging.getLogger()
+        file_handler = logging.FileHandler(log_file_path)
+        file_handler.setFormatter(log_formatter)
+        root_logger.addHandler(file_handler)
 
     def collect(self):
         result = self.__download_news()
@@ -47,7 +64,6 @@ class SinaFinanceNewsCollector:
     def __update_news(self, downloaded_news):
         current_news = self.__read_previous_news_list()
         current_news = self.__reduce_list(current_news)
-
         downloaded_news.reverse()
         length = len(downloaded_news)
 
@@ -62,7 +78,7 @@ class SinaFinanceNewsCollector:
             if self.__contains(current_news, temp) is False:
                 if len(current_news) >= self.MAX_NEWS_COUNT:
                     current_news.pop()
-                    current_news.insert(0, downloaded_news[i])
+                current_news.insert(0, temp)
                 news_added_count += 1
             i += 1
 
@@ -97,13 +113,13 @@ class SinaFinanceNewsCollector:
 
     def __read_previous_news_list(self):
         logging.info("Reading news list file")
-        return FileUtils.read_lost_from_local_path_json(self.__get_data_file_path())
+        return FileUtils.read_list_from_local_path_json(self.__get_data_file_path())
 
     def __write_news_list(self, news_list):
         logging.info("Writing news list file")
         FileUtils.write_list_to_local_path_json(news_list, self.__get_data_file_path())
 
     def __get_data_file_path(self):
-        data_pool = self.config.get('data_pool','data_pool')
-        data_file = self.config.get('tushare_news','data_file')
+        data_pool = self.config.get('LOCAL_DATA_POOL_PATH', 'value')
+        data_file = self.config.get('LOCAL_NEWS_DATA_PATH', 'value')
         return os.path.join(data_pool, data_file)
