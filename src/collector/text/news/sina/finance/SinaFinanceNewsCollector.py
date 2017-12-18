@@ -18,10 +18,9 @@ class SinaFinanceNewsCollector:
         self.config.read("configuration/collector/text/collector_sina.config")
         self.MAX_NEWS_COUNT = max_news if max_news is not None else self.config.get('MAX_NEWS_COUNT', 'value')
 
-    @staticmethod
-    def __init_logger():
+    def __init_logger(self):
         log_folder_path = "log/collector/text/sina"
-        log_file_name = datetime.now().strftime('%c') + ".log"
+        log_file_name = self.__class__.__name__ + " " + datetime.now().strftime('%c') + ".log"
         log_file_path = os.path.join(log_folder_path, log_file_name)
 
         if not os.path.isfile(log_file_path):
@@ -113,11 +112,11 @@ class SinaFinanceNewsCollector:
 
     def __read_previous_news_list(self):
         logging.info("Reading news list file")
-        return FileUtils.read_list_from_local_path_json(self.__get_data_file_path())
+        return FileUtils.read_list_from_local_path(self.__get_data_file_path())
 
     def __write_news_list(self, news_list):
         logging.info("Writing news list file")
-        FileUtils.write_list_to_local_path_json(news_list, self.__get_data_file_path())
+        FileUtils.write_list_to_local_path(news_list, self.__get_data_file_path())
 
     def __get_data_file_path(self):
         data_pool = self.config.get('LOCAL_DATA_POOL_PATH', 'value')

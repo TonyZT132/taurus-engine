@@ -4,12 +4,12 @@ Quick Start
 ---
 ##### Example
 ```
-python3 taurus.py track news tushare 50
+python3 taurus-cmd.py -collect -text -news --org=sina --cat=finance
 ```
 
 ##### Example
 ```
-python3 taurus.py analyze sentiment tushare all
+python3 taurus-cmd.py -analytics -text -news -benchmark --org=sina --cat=finance
 ```
 
 ##### Example

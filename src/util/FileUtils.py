@@ -16,13 +16,13 @@ class FileUtils:
             os.utime(file_path, None)
 
     @staticmethod
-    def write_list_to_local_path_json(list, path):
+    def write_list_to_local_path(list, path):
         f = open(path, 'wb')
         pickle.dump(list, f)
         f.close()
 
     @staticmethod
-    def read_list_from_local_path_json(path):
+    def read_list_from_local_path(path):
         if os.path.isfile(path):
             f = open(path, 'rb')
             loaded_list = pickle.load(f)
