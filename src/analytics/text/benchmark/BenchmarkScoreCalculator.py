@@ -60,9 +60,6 @@ class BenchmarkScoreCalculator:
                 final_score += float(score)
                 count += 1
 
-                print(sentence)
-                print(final_score)
-
             if count == 0:
                 logging.warning("Invalid segmentation, reset final score to zero ")
                 final_score = float(0)
@@ -88,11 +85,11 @@ class BenchmarkScoreCalculator:
 
         # 否定词
         logging.info("Loading dropped word dictionary")
-        list_dropped_word = self.__load_dict(self.__get_training_data_file_path_degree_word(), True)
+        list_dropped_word = self.__load_dict(self.__get_training_data_file_path_dropped_word(), True)
 
         # 程度副词
         logging.info("Loading degree word dictionary")
-        list_degree_word = self.__load_dict(self.__get_training_data_file_path_dropped_word(), True)
+        list_degree_word = self.__load_dict(self.__get_training_data_file_path_degree_word(), True)
         dict_degree_word = defaultdict()
         for d in list_degree_word:
             pair = d.split(',')
@@ -138,7 +135,7 @@ class BenchmarkScoreCalculator:
                     if sentiment_word_location_index < len(sentiment_word_location) - 1:
                         # 判断该情感词与下一情感词之间是否有否定词或程度副词,j为绝对位置
                         for j in range(sentiment_word_location[sentiment_word_location_index],
-                                   sentiment_word_location[sentiment_word_location_index + 1]):
+                                       sentiment_word_location[sentiment_word_location_index + 1]):
                             # 如果有否定词
                             if j in dropped_word_location:
                                 weight *= -1
