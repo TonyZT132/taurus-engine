@@ -4,7 +4,6 @@ import logging
 import jieba
 import jieba.analyse
 
-from datetime import date
 from datetime import datetime
 from configparser import ConfigParser
 
