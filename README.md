@@ -12,7 +12,7 @@ python3 taurus-cmd.py -collect -text -news --org=sina --cat=finance
 python3 taurus-cmd.py -analytics -text -news -benchmark --org=sina --cat=finance
 ```
 
-##### Example
+##### Example (Not Avaliable)
 ```
 python3 taurus.py report tushare all
 ```
