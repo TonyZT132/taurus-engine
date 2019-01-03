@@ -1,4 +1,4 @@
-# Taurus AI Stock Trading & Analytics System
+# Taurus AI Stock Analytics Service
 
 Quick Start
 ---
